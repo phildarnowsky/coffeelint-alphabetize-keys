@@ -1,0 +1,39 @@
+{
+  "name": "coffeelint-alphabetize-keys",
+  "version": "0.1.5",
+  "description": "Coffeelint rule that verifies object keys are in alphabetical order",
+  "main": "./lib/index.js",
+  "files": ["lib"],
+  "scripts": {
+    "build": "coffee --compile --output lib/ src/index.coffee",
+    "lint": "coffeelint -f coffeelint.json src/ spec/",
+    "pretest": "npm run-script lint && npm run-script build",
+    "test": "mycha --reporter=spec",
+    "prepublish": "npm run-script build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charlierudolph/coffeelint-alphabetize-keys.git"
+  },
+  "keywords": [
+    "coffeelint",
+    "coffeelintrule"
+  ],
+  "author": {
+    "name": "Charlie Rudolph",
+    "email": "charles.w.rudolph@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charlierudolph/coffeelint-alphabetize-keys/issues"
+  },
+  "homepage": "https://github.com/charlierudolph/coffeelint-alphabetize-keys",
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "coffee-script": "^1.9.0",
+    "coffeelint": "^1.8.1",
+    "mycha": "^0.9.2",
+    "sinon": "^1.16.1",
+    "sinon-chai": "^2.8.0"
+  }
+}
