@@ -7,9 +7,9 @@
   "scripts": {
     "build": "coffee --compile --output lib/ src/index.coffee",
     "lint": "coffeelint -f coffeelint.json src/ spec/",
-    "pretest": "npm run-script lint && npm run-script build",
-    "test": "mycha --reporter=spec",
-    "prepublish": "npm run-script build"
+    "prepublish": "npm run-script build",
+    "posttest": "npm run-script lint",
+    "test": "mycha --reporter=spec"
   },
   "repository": {
     "type": "git",
