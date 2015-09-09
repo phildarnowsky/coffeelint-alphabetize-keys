@@ -1,9 +1,11 @@
 {
   "name": "coffeelint-alphabetize-keys",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "Coffeelint rule that verifies object keys are in alphabetical order",
   "main": "./lib/index.js",
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "coffee --compile --output lib/ src/index.coffee",
     "lint": "coffeelint -f coffeelint.json src/ spec/",
