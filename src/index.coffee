@@ -30,9 +30,8 @@ class AlphabetizeKeys
     instanceKeys = []
     privateKeys = []
 
-    expressions = node.body.expressions.filter (e) -> astApi.getNodeName(e.base) is 'Obj'
-
-    expressions.forEach (expression) =>
+    node.body.expressions.forEach (expression) =>
+      return unless astApi.getNodeName(expression.base) is 'Obj'
       expression.base.properties.forEach (property) =>
         keyNode = @_getPropertyValueNode property, astApi
         key = keyNode.base.value
