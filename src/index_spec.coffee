@@ -8,6 +8,13 @@ alphabetical =
       keyB: 2
       keyC: 3
     '''
+  defineClassWithConstructor: '''
+    class A
+      keyA: 1
+      constructor: 0
+      keyB: 2
+      keyC: 3
+    '''
   defineClassWithClassMethods: '''
     class A
       @keyD: 1

@@ -39,7 +39,7 @@ class AlphabetizeKeys
           classKeys.push keyNode.properties[0].name.value
         else if key[0] is '_'
           privateKeys.push key
-        else
+        else if key isnt 'constructor' # TODO ensure at top of instanceKeys instead of ignoring
           instanceKeys.push key
 
     @_lintNodeKeys node, astApi, classKeys
