@@ -5,12 +5,6 @@
 
 Coffeelint rule requiring objects to have keys in alphabetical order
 
-## Examples
-```coffee
-{keyA, keyB, keyC} # Good
-{keyC, keyB, keyA} # Bad
-```
-
 ## Installation
 
 ```
@@ -26,3 +20,44 @@ Put this in your coffeelint config:
   "module": "coffeelint-alphabetize-keys",
 }
 ```
+
+## Examples
+
+### Objects
+
+```coffee
+{keyA, keyB, keyC} # Good
+{keyC, keyB, keyA} # Bad
+```
+
+The rule applies to both defining and destructing objects.
+
+### Classes
+
+The rule differentiates between variables and methods,
+and each are required to only be individually alphabetical.
+
+```coffee
+# Good
+class A
+  variableA: 1 * 2
+  variableB: 'abc'
+  variableC: fn()
+
+  methodA: ->
+  methodB: ->
+  methodC: ->
+
+# Bad
+class A
+  variableC: fn()
+  variableB: 'abc'
+  variableA: 1 * 2
+
+  methodC: ->
+  methodB: ->
+  methodA: ->
+```
+
+Methods and variables are also broken down into static, instance, and private instance (starting with `_`)
+where each are required to only be individually alphabetical.

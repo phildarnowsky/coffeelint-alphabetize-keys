@@ -26,25 +26,37 @@ class AlphabetizeKeys
 
 
   _lintClass: (node, astApi) ->
-    classKeys = []
-    instanceKeys = []
-    privateKeys = []
+    keysMapping = {
+      instanceMethods: []
+      instanceVariables: []
+      privateMethods: []
+      privateVariables: []
+      staticMethods: []
+      staticVariables: []
+    }
 
     node.body.expressions.forEach (expression) =>
       return unless astApi.getNodeName(expression.base) is 'Obj'
       expression.base.properties.forEach (property) =>
         keyNode = @_getPropertyValueNode property, astApi
         key = keyNode.base.value
-        if key is 'this'
-          classKeys.push keyNode.properties[0].name.value
-        else if key[0] is '_'
-          privateKeys.push key
-        else if key isnt 'constructor' # TODO ensure at top of instanceKeys instead of ignoring
-          instanceKeys.push key
+        if astApi.getNodeName(property.value) is 'Code'
+          if key is 'this'
+            keysMapping.staticMethods.push keyNode.properties[0].name.value
+          else if key[0] is '_'
+            keysMapping.privateMethods.push key
+          else if key isnt 'constructor'
+            keysMapping.instanceMethods.push key
+        else
+          if key is 'this'
+            keysMapping.staticVariables.push keyNode.properties[0].name.value
+          else if key[0] is '_'
+            keysMapping.privateVariables.push key
+          else
+            keysMapping.instanceVariables.push key
 
-    @_lintNodeKeys node, astApi, classKeys
-    @_lintNodeKeys node, astApi, instanceKeys
-    @_lintNodeKeys node, astApi, privateKeys
+    for id, keys of keysMapping
+      @_lintNodeKeys node, astApi, keys
 
 
   _lintNode: (node, astApi) ->

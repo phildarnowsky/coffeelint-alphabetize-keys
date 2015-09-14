@@ -4,41 +4,32 @@ coffeelint = require 'coffeelint'
 alphabetical =
   defineClass: '''
     class A
-      keyA: 1
-      keyB: 2
-      keyC: 3
-    '''
-  defineClassWithConstructor: '''
-    class A
-      keyA: 1
-      constructor: 0
-      keyB: 2
-      keyC: 3
-    '''
-  defineClassWithClassMethods: '''
-    class A
-      @keyD: 1
-      @keyE: 2
-      @keyF: 3
-      keyA: 4
-      keyB: 5
-      keyC: 6
-    '''
-  defineClassWithInteralExpressions: '''
-    class A
-      A = 1
-      keyA: 1
-      keyB: 2
-      keyC: 3
-    '''
-  defineClassWithPrivateMethod: '''
-    class A
-      keyD: 1
-      keyE: 2
-      keyF: 3
-      _keyA: 4
-      _keyB: 5
-      _keyC: 6
+      @variableA: 1 * 2
+      @variableB: 'abc'
+      @variableC: fn()
+
+      @methodA: ->
+      @methodB: ->
+      @methodC: ->
+
+      variableA: 1 * 2
+      variableB: 'abc'
+      variableC: fn()
+
+      constructor: ->
+
+      aMethod: ->
+      methodA: ->
+      methodB: ->
+      methodC: ->
+
+      _methodA: ->
+      _methodB: ->
+      _methodC: ->
+
+      _variableA: 1 * 2
+      _variableB: 'abc'
+      _variableC: fn()
     '''
   defineObject: '''
     object =
@@ -61,29 +52,41 @@ alphabetical =
 
 
 notAlphabetical =
-  defineClass: '''
+  defineClassWithInstanceMethods: '''
     class A
-      keyC: 3
-      keyB: 2
-      keyA: 1
+      methodC: ->
+      methodB: ->
+      methodA: ->
     '''
-  defineClassWithClassMethods: '''
+  defineClassWithInstanceVariables: '''
     class A
-      @keyF: 3
-      @keyE: 2
-      @keyD: 1
-      keyA: 4
-      keyB: 5
-      keyC: 6
+      variableC: fn()
+      variableB: 'abc'
+      variableA: 1 * 2
     '''
-  defineClassWithPrivateMethod: '''
+  defineClassWithPrivateMethods: '''
     class A
-      keyD: 1
-      keyE: 2
-      keyF: 3
-      _keyC: 6
-      _keyB: 5
-      _keyA: 4
+      _methodC: ->
+      _methodB: ->
+      _methodA: ->
+    '''
+  defineClassWithPrivateVariables: '''
+    class A
+      _variableC: fn()
+      _variableB: 'abc'
+      _variableA: 1 * 2
+    '''
+  defineClassWithStaticMethods: '''
+    class A
+      @methodC: ->
+      @methodB: ->
+      @methodA: ->
+    '''
+  defineClassWithStaticVariables: '''
+    class A
+      @variableC: fn()
+      @variableB: 'abc'
+      @variableA: 1 * 2
     '''
   defineObject: '''
     object =
