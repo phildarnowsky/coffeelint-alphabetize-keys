@@ -36,6 +36,7 @@ The rule applies to both defining and destructing objects.
 
 The rule differentiates between variables and methods,
 and each are required to only be individually alphabetical.
+The `constructor` method is ignored.
 
 ```coffee
 # Good
