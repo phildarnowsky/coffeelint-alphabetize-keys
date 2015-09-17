@@ -70,6 +70,7 @@ class AlphabetizeKeys
 
 
   _lintNodeKeys: (node, astApi, keys) ->
+    keys = keys.map @_stripQuotes
     for key, index in keys when index isnt 0 and keys[index - 1] > key
       @errors.push astApi.createError {
         lineNumber: node.locationData.first_line + 1
@@ -88,6 +89,15 @@ class AlphabetizeKeys
       keys.push key
 
     @_lintNodeKeys node, astApi, keys
+
+
+  _stripQuotes: (key) ->
+    if singleQuoteMatch = key.match(/^'(.*)'$/)
+      singleQuoteMatch[1]
+    else if doubleQuoteMatch = key.match(/^"(.*)"$/)
+      doubleQuoteMatch[2]
+    else
+      key
 
 
 module.exports = AlphabetizeKeys

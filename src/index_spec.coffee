@@ -46,6 +46,12 @@ alphabetical =
       keyB: 2
       keyC: 3
     '''
+  defineObjectWithQuotedKeys: '''
+    object =
+      keyA: 1
+      'keyB': 2
+      "keyC": 3
+    '''
   destructObjectArgument: 'fn = ({keyA, keyB, keyC}) ->'
   destructObjectAssignment: '{keyA, keyB, keyC} = object'
   destructObjectAssignmentWithThis: '{keyA, @keyB, keyC} = object'
@@ -102,6 +108,12 @@ notAlphabetical =
         keyD: 4
       keyB: 2
       keyC: 3
+    '''
+  defineObjectWithQuotedKeys: '''
+    object =
+      "keyC": 3
+      'keyB': 2
+      keyA: 1
     '''
   destructObjectArgument: 'fn = ({keyC, keyB, keyA}) ->'
   destructObjectAssignment: '{keyC, keyB, keyA} = object'
