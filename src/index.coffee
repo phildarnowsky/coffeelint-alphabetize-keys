@@ -84,6 +84,7 @@ class AlphabetizeKeys
 
     node.properties.forEach (property) =>
       keyNode = @_getPropertyValueNode property, astApi
+      return if keyNode.base.isComplex()
       key = keyNode.base.value
       key = keyNode.properties[0].name.value if key is 'this'
       keys.push key

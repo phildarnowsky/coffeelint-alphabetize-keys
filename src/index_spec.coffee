@@ -37,6 +37,14 @@ alphabetical =
       keyB: 2
       keyC: 3
     '''
+  # coffeelint: disable=no_interpolation_in_single_quotes
+  defineObjectWithInterpolatedKeys: '''
+    object =
+      keyA: 1
+      "#{interpolated}": 2
+      keyB: 3
+    '''
+  # coffeelint: enable=no_interpolation_in_single_quotes
   defineObjectWithNestedObject: '''
     object =
       keyA:
