@@ -1,3 +1,8 @@
+### 1.3.0 (2015-09-20)
+
+* ignore interpolated keys in objects
+
+---
 ### 1.2.0 (2015-09-16)
 
 * support quoted keys
