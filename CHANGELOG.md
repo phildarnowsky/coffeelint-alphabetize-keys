@@ -1,3 +1,9 @@
+### 1.4.0 (2015-09-28)
+
+* add support for private static methods and variables in classes
+* add offending keys to the error message
+
+---
 ### 1.3.0 (2015-09-20)
 
 * ignore interpolated keys in objects
