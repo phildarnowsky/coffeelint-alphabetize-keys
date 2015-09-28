@@ -34,31 +34,25 @@ The rule applies to both defining and destructing objects.
 
 ### Classes
 
-The rule differentiates between variables and methods,
-and each are required to only be individually alphabetical.
-The `constructor` method is ignored.
-
 ```coffee
 # Good
 class A
-  variableA: 1 * 2
-  variableB: 'abc'
-  variableC: fn()
-
   methodA: ->
   methodB: ->
   methodC: ->
 
 # Bad
 class A
-  variableC: fn()
-  variableB: 'abc'
-  variableA: 1 * 2
-
   methodC: ->
   methodB: ->
   methodA: ->
 ```
 
-Methods and variables are also broken down into static, instance, and private instance (starting with `_`)
-where each are required to only be individually alphabetical.
+The keys are broken down into breaks 8 categories and
+each are required to only be individually alphabetical.
+Keys are seperated based on:
+* function vs variable (based on the type of the value)
+* public vs private (key starting with `_` is private)
+* instance vs static
+
+The `constructor` function is ignored.

@@ -8,8 +8,38 @@ class AlphabetizeKeys
   rule:
     description: 'Makes finding keys within an object very easy'
     level: 'error'
-    message: 'Object keys should be alphabetized'
+    message: 'Object and class keys should be alphabetized'
     name: 'alphabetize_keys'
+
+
+  _emptyClassKeyMapping: ->
+    private:
+      instance:
+        method: []
+        variable: []
+      static:
+        method: []
+        variable: []
+    public:
+      instance:
+        method: []
+        variable: []
+      static:
+        method: []
+        variable: []
+
+
+  _getClassPropertyInfo: (property, astApi) ->
+    keyNode = @_getPropertyValueNode property, astApi
+    key = keyNode.base.value
+    classType = 'instance'
+    if key is 'this'
+      key = keyNode.properties[0].name.value
+      classType = 'static'
+    visibility = if key[0] is '_' then 'private' else 'public'
+    valueType = if astApi.getNodeName(property.value) is 'Code' then 'method' else 'variable'
+
+    {classType, key, valueType, visibility}
 
 
   _getPropertyValueNode: (property, astApi) ->
@@ -26,37 +56,24 @@ class AlphabetizeKeys
 
 
   _lintClass: (node, astApi) ->
-    keysMapping = {
-      instanceMethods: []
-      instanceVariables: []
-      privateMethods: []
-      privateVariables: []
-      staticMethods: []
-      staticVariables: []
-    }
+    keysMapping = @_emptyClassKeyMapping()
 
     node.body.expressions.forEach (expression) =>
       return unless astApi.getNodeName(expression.base) is 'Obj'
       expression.base.properties.forEach (property) =>
-        keyNode = @_getPropertyValueNode property, astApi
-        key = keyNode.base.value
-        if astApi.getNodeName(property.value) is 'Code'
-          if key is 'this'
-            keysMapping.staticMethods.push keyNode.properties[0].name.value
-          else if key[0] is '_'
-            keysMapping.privateMethods.push key
-          else if key isnt 'constructor'
-            keysMapping.instanceMethods.push key
-        else
-          if key is 'this'
-            keysMapping.staticVariables.push keyNode.properties[0].name.value
-          else if key[0] is '_'
-            keysMapping.privateVariables.push key
-          else
-            keysMapping.instanceVariables.push key
+        {classType, key, valueType, visibility} = @_getClassPropertyInfo property, astApi
 
-    for id, keys of keysMapping
-      @_lintNodeKeys node, astApi, keys
+        return if visibility is 'public' and
+          classType is 'instance' and
+          valueType is 'method' and
+          key is 'constructor'
+
+        keysMapping[visibility][classType][valueType].push key
+
+    for visibility, visibilityMapping of keysMapping
+      for classType, classTypeMapping of visibilityMapping
+        for valueType, keys of classTypeMapping
+          @_lintNodeKeys node, astApi, keys, [visibility, classType, valueType].join(' ')
 
 
   _lintNode: (node, astApi) ->
@@ -69,11 +86,12 @@ class AlphabetizeKeys
         node.eachChild (child) => @_lintNode child, astApi
 
 
-  _lintNodeKeys: (node, astApi, keys) ->
+  _lintNodeKeys: (node, astApi, keys, prefix) ->
     keys = keys.map @_stripQuotes
     for key, index in keys when index isnt 0 and keys[index - 1] > key
       @errors.push astApi.createError {
         lineNumber: node.locationData.first_line + 1
+        message: "#{prefix} keys should be alphabetized: #{keys[index - 1]} appears after #{key}"
         rule: 'alphabetize_keys'
       }
       return
@@ -89,7 +107,7 @@ class AlphabetizeKeys
       key = keyNode.properties[0].name.value if key is 'this'
       keys.push key
 
-    @_lintNodeKeys node, astApi, keys
+    @_lintNodeKeys node, astApi, keys, 'Object'
 
 
   _stripQuotes: (key) ->

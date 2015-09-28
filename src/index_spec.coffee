@@ -1,20 +1,33 @@
 AlphabetizeKeys = require './'
 coffeelint = require 'coffeelint'
 
+
 alphabetical =
-  defineClass: '''
+  'define class': '''
     class A
       @variableA: 1 * 2
       @variableB: 'abc'
       @variableC: fn()
 
+      @_variableA: 1 * 2
+      @_variableB: 'abc'
+      @_variableC: fn()
+
       @methodA: ->
       @methodB: ->
       @methodC: ->
 
+      @_methodA: ->
+      @_methodB: ->
+      @_methodC: ->
+
       variableA: 1 * 2
       variableB: 'abc'
       variableC: fn()
+
+      _variableA: 1 * 2
+      _variableB: 'abc'
+      _variableC: fn()
 
       constructor: ->
 
@@ -26,26 +39,22 @@ alphabetical =
       _methodA: ->
       _methodB: ->
       _methodC: ->
-
-      _variableA: 1 * 2
-      _variableB: 'abc'
-      _variableC: fn()
     '''
-  defineObject: '''
+  'define object': '''
     object =
       keyA: 1
       keyB: 2
       keyC: 3
     '''
   # coffeelint: disable=no_interpolation_in_single_quotes
-  defineObjectWithInterpolatedKeys: '''
+  'define object with interpolated keys': '''
     object =
       keyA: 1
       "#{interpolated}": 2
       keyB: 3
     '''
   # coffeelint: enable=no_interpolation_in_single_quotes
-  defineObjectWithNestedObject: '''
+  'define object with nested object': '''
     object =
       keyA:
         keyD: 4
@@ -54,61 +63,73 @@ alphabetical =
       keyB: 2
       keyC: 3
     '''
-  defineObjectWithQuotedKeys: '''
+  'define object with quoted keys': '''
     object =
       keyA: 1
       'keyB': 2
       "keyC": 3
     '''
-  destructObjectArgument: 'fn = ({keyA, keyB, keyC}) ->'
-  destructObjectAssignment: '{keyA, keyB, keyC} = object'
-  destructObjectAssignmentWithThis: '{keyA, @keyB, keyC} = object'
+  'destruct object argument': 'fn = ({keyA, keyB, keyC}) ->'
+  'destruct object assignment': '{keyA, keyB, keyC} = object'
+  'destruct object assignment with this': '{keyA, @keyB, keyC} = object'
 
 
 notAlphabetical =
-  defineClassWithInstanceMethods: '''
-    class A
-      methodC: ->
-      methodB: ->
-      methodA: ->
-    '''
-  defineClassWithInstanceVariables: '''
-    class A
-      variableC: fn()
-      variableB: 'abc'
-      variableA: 1 * 2
-    '''
-  defineClassWithPrivateMethods: '''
+  'define class with private instance methods': '''
     class A
       _methodC: ->
       _methodB: ->
       _methodA: ->
     '''
-  defineClassWithPrivateVariables: '''
+  'define class with private instance variables': '''
     class A
       _variableC: fn()
       _variableB: 'abc'
       _variableA: 1 * 2
     '''
-  defineClassWithStaticMethods: '''
+  'define class with private static methods': '''
+    class A
+      @_methodC: ->
+      @_methodB: ->
+      @_methodA: ->
+    '''
+  'define class with private static variables': '''
+    class A
+      @_variableC: fn()
+      @_variableB: 'abc'
+      @_variableA: 1 * 2
+    '''
+  'define class with public instance methods': '''
+    class A
+      methodC: ->
+      methodB: ->
+      methodA: ->
+    '''
+  'define class with public instance variables': '''
+    class A
+      variableC: fn()
+      variableB: 'abc'
+      variableA: 1 * 2
+    '''
+  'define class with public static methods': '''
     class A
       @methodC: ->
       @methodB: ->
       @methodA: ->
     '''
-  defineClassWithStaticVariables: '''
+  'define class with public static variables': '''
     class A
       @variableC: fn()
       @variableB: 'abc'
       @variableA: 1 * 2
     '''
-  defineObject: '''
+  'define object': '''
     object =
       keyC: 3
       keyB: 2
       keyA: 1
     '''
-  defineObjectWithNestedObject: '''
+  'define object with nested object': '''
     object =
       keyA:
         keyF: 6
@@ -117,15 +138,15 @@ notAlphabetical =
       keyB: 2
       keyC: 3
     '''
-  defineObjectWithQuotedKeys: '''
+  'define object with quoted keys': '''
     object =
       "keyC": 3
       'keyB': 2
       keyA: 1
     '''
-  destructObjectArgument: 'fn = ({keyC, keyB, keyA}) ->'
-  destructObjectAssignment: '{keyC, keyB, keyA} = object'
-  destructObjectAssignmentWithThis: '{keyC, @keyB, keyA} = object'
+  'destruct object argument': 'fn = ({keyC, keyB, keyA}) ->'
+  'destruct object assignment': '{keyC, keyB, keyA} = object'
+  'destruct object assignment with this': '{keyC, @keyB, keyA} = object'
 
 
 describe 'alphabetize_keys', ->
@@ -142,7 +163,7 @@ describe 'alphabetize_keys', ->
   context 'keys are not alphabetical', ->
     Object.keys(notAlphabetical).forEach (name) ->
       context name, ->
-        it 'returns no errors', ->
+        it 'returns an error', ->
           errors = coffeelint.lint notAlphabetical[name]
           expect(errors).to.have.lengthOf 1
           expect(errors[0].rule).to.eql 'alphabetize_keys'
