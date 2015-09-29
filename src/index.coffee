@@ -91,7 +91,7 @@ class AlphabetizeKeys
     for key, index in keys when index isnt 0 and keys[index - 1] > key
       @errors.push astApi.createError {
         lineNumber: node.locationData.first_line + 1
-        message: "#{prefix} keys should be alphabetized: #{keys[index - 1]} appears after #{key}"
+        message: "#{prefix} keys should be alphabetized: #{keys[index - 1]} appears before #{key}"
         rule: 'alphabetize_keys'
       }
 
