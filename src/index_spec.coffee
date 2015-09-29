@@ -165,5 +165,5 @@ describe 'alphabetize_keys', ->
       context name, ->
         it 'returns an error', ->
           errors = coffeelint.lint notAlphabetical[name]
-          expect(errors).to.have.lengthOf 1
+          expect(errors).to.have.lengthOf 2
           expect(errors[0].rule).to.eql 'alphabetize_keys'

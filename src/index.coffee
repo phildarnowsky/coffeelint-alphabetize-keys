@@ -94,7 +94,6 @@ class AlphabetizeKeys
         message: "#{prefix} keys should be alphabetized: #{keys[index - 1]} appears after #{key}"
         rule: 'alphabetize_keys'
       }
-      return
 
 
   _lintObject: (node, astApi) ->
@@ -114,7 +113,7 @@ class AlphabetizeKeys
     if singleQuoteMatch = key.match(/^'(.*)'$/)
       singleQuoteMatch[1]
     else if doubleQuoteMatch = key.match(/^"(.*)"$/)
-      doubleQuoteMatch[2]
+      doubleQuoteMatch[1]
     else
       key
 
