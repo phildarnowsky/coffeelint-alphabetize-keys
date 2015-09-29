@@ -1,3 +1,9 @@
+### 1.4.1 (2015-09-28)
+
+* fix error message
+* report all errors instead of one per object/class
+
+---
 ### 1.4.0 (2015-09-28)
 
 * add support for private static methods and variables in classes
