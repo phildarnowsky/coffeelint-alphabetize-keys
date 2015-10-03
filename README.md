@@ -17,7 +17,7 @@ Put this in your coffeelint config:
 
 ```json
 "alphabetize_keys": {
-  "module": "coffeelint-alphabetize-keys",
+  "module": "coffeelint-alphabetize-keys"
 }
 ```
 
