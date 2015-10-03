@@ -1,3 +1,8 @@
+### 1.4.2 (2015-10-03)
+
+* fix documentation
+
+---
 ### 1.4.1 (2015-09-28)
 
 * fix error message
