@@ -48,7 +48,7 @@ class A
   methodA: ->
 ```
 
-The keys are broken down into breaks 8 categories and
+The keys are broken down into 8 categories and
 each are required to only be individually alphabetical.
 Keys are seperated based on:
 * function vs variable (based on the type of the value)
