@@ -167,3 +167,38 @@ describe 'alphabetize_keys', ->
           errors = coffeelint.lint notAlphabetical[name]
           expect(errors).to.have.lengthOf 2
           expect(errors[0].rule).to.eql 'alphabetize_keys'
+
+  context 'overrides', ->
+    beforeEach ->
+      @str = '''
+        class A
+          methodD: ->
+          methodB: ->
+          methodA: ->
+          methodC: ->
+        '''
+
+    context 'matches overrides ordering', ->
+      it 'returns no errors', ->
+        opts = alphabetize_keys: overrides: ['methodD', 'methodB', 'methodA', 'methodC']
+        errors = coffeelint.lint @str, opts
+        expect(errors).to.be.empty
+
+    context 'does not match overrides ordering', ->
+      it 'returns an error', ->
+        opts = alphabetize_keys: overrides: ['methodD', 'methodA', 'methodB', 'methodC']
+        errors = coffeelint.lint @str, opts
+        expect(errors).to.have.lengthOf 1
+        expect(errors[0].rule).to.eql 'alphabetize_keys'
+
+    context 'with other keys', ->
+      it 'alphabetical', ->
+        opts = alphabetize_keys: overrides: ['methodD', 'methodB']
+        errors = coffeelint.lint @str, opts
+        expect(errors).to.be.empty
+
+      it 'not alphabetical', ->
+        opts = alphabetize_keys: overrides: ['methodB', 'methodA']
+        errors = coffeelint.lint @str, opts
+        expect(errors).to.have.lengthOf 1
+        expect(errors[0].rule).to.eql 'alphabetize_keys'

@@ -10,6 +10,7 @@ class AlphabetizeKeys
     level: 'error'
     message: 'Object and class keys should be alphabetized'
     name: 'alphabetize_keys'
+    overrides: []
 
 
   _emptyClassKeyMapping: ->
@@ -56,6 +57,8 @@ class AlphabetizeKeys
 
 
   _lintClass: (node, astApi) ->
+    {overrides} = astApi.config[@rule.name]
+    specificKeys = []
     keysMapping = @_emptyClassKeyMapping()
 
     node.body.expressions.forEach (expression) =>
@@ -68,12 +71,17 @@ class AlphabetizeKeys
           valueType is 'method' and
           key is 'constructor'
 
-        keysMapping[visibility][classType][valueType].push key
+        if key in overrides
+          specificKeys.push key
+        else
+          keysMapping[visibility][classType][valueType].push key
 
     for visibility, visibilityMapping of keysMapping
       for classType, classTypeMapping of visibilityMapping
         for valueType, keys of classTypeMapping
           @_lintNodeKeys node, astApi, keys, [visibility, classType, valueType].join(' ')
+
+    @_lintOverrideKeys node, astApi, specificKeys
 
 
   _lintNode: (node, astApi) ->
@@ -108,6 +116,19 @@ class AlphabetizeKeys
 
     @_lintNodeKeys node, astApi, keys, 'Object'
 
+
+  _lintOverrideKeys: (node, astApi, keys) ->
+    {overrides} = astApi.config[@rule.name]
+    keys = keys.map @_stripQuotes
+    for key, index in keys
+      if index isnt 0 and overrides.indexOf(keys[index - 1]) > overrides.indexOf(key)
+        @errors.push astApi.createError {
+          lineNumber: node.locationData.first_line + 1
+          message: """
+            Keys should respect overrides ordering: #{keys[index - 1]} appears before #{key}
+            """
+          rule: 'alphabetize_keys'
+        }
 
   _stripQuotes: (key) ->
     if singleQuoteMatch = key.match(/^'(.*)'$/)

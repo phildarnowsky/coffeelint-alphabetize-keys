@@ -21,6 +21,10 @@ Put this in your coffeelint config:
 }
 ```
 
+### Configuration options
+
+* overrides - Array of keys to order as a separate category. Keys must appear in the order provided. 
+
 ## Examples
 
 ### Objects
@@ -56,3 +60,25 @@ Keys are seperated based on:
 * instance vs static
 
 The `constructor` function is ignored.
+
+#### With Overrides
+
+```json
+"alphabetize_keys": {
+  "module": "coffeelint-alphabetize-keys",
+  "overrides": ["methodC", "methodB", "methodA"]
+}
+```
+```coffee
+# Good
+class A
+  methodC: ->
+  methodB: ->
+  methodA: ->
+
+# Bad
+class A
+  methodA: ->
+  methodB: ->
+  methodC: ->
+```
