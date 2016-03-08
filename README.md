@@ -23,7 +23,7 @@ Put this in your coffeelint config:
 
 ### Configuration options
 
-* overrides - Array of keys to order as a separate category. Keys must appear in the order provided. 
+* `overrides` - Array of keys to order as a separate category, keys must appear in the order provided.
 
 ## Examples
 
@@ -54,14 +54,14 @@ class A
 
 The keys are broken down into 8 categories and
 each are required to only be individually alphabetical.
-Keys are seperated based on:
+Keys are separated based on:
 * function vs variable (based on the type of the value)
 * public vs private (key starting with `_` is private)
 * instance vs static
 
 The `constructor` function is ignored.
 
-#### With Overrides
+#### Overrides
 
 ```json
 "alphabetize_keys": {

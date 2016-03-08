@@ -1,3 +1,9 @@
+### 1.5.0 (2016-03-07)
+
+* support overrides for specific ordering
+
+---
+
 ### 1.4.2 (2015-10-03)
 
 * fix documentation
