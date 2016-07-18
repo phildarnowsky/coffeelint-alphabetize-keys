@@ -1,10 +1,12 @@
 class AlphabetizeKeys
+  AlphaNode = require('./alphanode')
 
+  # Coffeelint's main entry point
   lintAST: (node, astApi) ->
     @_lintNode node, astApi
     null
 
-
+  # Coffeelint also requires this to be set, with these fields
   rule:
     description: 'Makes finding keys within an object very easy'
     level: 'error'
@@ -12,131 +14,65 @@ class AlphabetizeKeys
     name: 'alphabetize_keys'
     overrides: []
 
+  _classSectionIndex: (sectionName) ->
+    @_classSectionNames().indexOf(sectionName)
 
-  _emptyClassKeyMapping: ->
-    private:
-      instance:
-        method: []
-        variable: []
-      static:
-        method: []
-        variable: []
-    public:
-      instance:
-        method: []
-        variable: []
-      static:
-        method: []
-        variable: []
+  _classSectionNames: () ->
+    @__sectionNames ?= (pair[0] for pair in @_classSectionTests)
 
+  # Class properties should be in this order:
+  #   Constants
+  #   Static methods
+  #   Template methods (if applicable), with the main template first
+  #   Constructor/initialize method
+  #   Public methods
+  #   Private methods (whose names should begin with the "_" character)
 
-  _getClassPropertyInfo: (property, astApi) ->
-    keyNode = @_getPropertyValueNode property, astApi
-    key = keyNode.base.value
-    classType = 'instance'
-    if key is 'this'
-      key = keyNode.properties[0].name.value
-      classType = 'static'
-    visibility = if key[0] is '_' then 'private' else 'public'
-    valueType = if astApi.getNodeName(property.value) is 'Code' then 'method' else 'variable'
-
-    {classType, key, valueType, visibility}
-
-
-  _getPropertyValueNode: (property, astApi) ->
-    if astApi.getNodeName(property) is 'Value'
-      property
-    else if astApi.getNodeName(property.variable) is 'Value'
-      @_lintNode property.value, astApi
-      property.variable
-    else
-      throw Error """
-        Cannot handle property
-        #{property}
-        """
-
+  _classSectionTests:
+    [
+      ['constant', '_isConstant'],
+      ['static', '_isStatic'],
+      ['mainTemplate', '_isMainTemplate'],
+      ['secondaryTemplate', '_isSecondaryTemplate'],
+      ['setupMethod', '_isSetupMethod'],
+      ['publicMethod', '_isPublicMethod'],
+      ['privateMethod', '_isPrivateMethod']
+    ]
 
   _lintClass: (node, astApi) ->
-    {overrides} = astApi.config[@rule.name]
-    specificKeys = []
-    keysMapping = @_emptyClassKeyMapping()
+    lastSection = null
+    lastIndex = null
+    lastName = null
 
     node.body.expressions.forEach (expression) =>
       return unless astApi.getNodeName(expression.base) is 'Obj'
-      expression.base.properties.forEach (property) =>
-        {classType, key, valueType, visibility} = @_getClassPropertyInfo property, astApi
-
-        return if visibility is 'public' and
-          classType is 'instance' and
-          valueType is 'method' and
-          key is 'constructor'
-
-        if key in overrides
-          specificKeys.push key
-        else
-          keysMapping[visibility][classType][valueType].push key
-
-    for visibility, visibilityMapping of keysMapping
-      for classType, classTypeMapping of visibilityMapping
-        for valueType, keys of classTypeMapping
-          @_lintNodeKeys node, astApi, keys, [visibility, classType, valueType].join(' ')
-
-    @_lintOverrideKeys node, astApi, specificKeys
-
+      expression.base.properties.forEach (presented) =>
+        property = new AlphaNode(presented, astApi)
+        name = property.methodName()
+        section = @_nodeSection property
+        index = @_classSectionIndex section
+        if lastName && ([lastIndex, lastName] > [index, name])
+          @errors.push astApi.createError {
+            lineNumber: node.locationData.first_line + 1
+            message: "Class keys should be alphabetized: " +
+                     "#{lastSection} #{lastName} comes before " +
+                     "#{section} #{name}"
+            rule: 'alphabetize_keys'
+          }
+        lastSection = section
+        lastIndex = index
+        lastName = name
 
   _lintNode: (node, astApi) ->
-    switch astApi.getNodeName node
-      when 'Class'
-        @_lintClass node, astApi
-      when 'Obj'
-        @_lintObject node, astApi
-      else
-        node.eachChild (child) => @_lintNode child, astApi
-
-
-  _lintNodeKeys: (node, astApi, keys, prefix) ->
-    keys = keys.map @_stripQuotes
-    for key, index in keys when index isnt 0 and keys[index - 1] > key
-      @errors.push astApi.createError {
-        lineNumber: node.locationData.first_line + 1
-        message: "#{prefix} keys should be alphabetized: #{keys[index - 1]} appears before #{key}"
-        rule: 'alphabetize_keys'
-      }
-
-
-  _lintObject: (node, astApi) ->
-    keys = []
-
-    node.properties.forEach (property) =>
-      keyNode = @_getPropertyValueNode property, astApi
-      return if keyNode.base.isComplex()
-      key = keyNode.base.value
-      key = keyNode.properties[0].name.value if key is 'this'
-      keys.push key
-
-    @_lintNodeKeys node, astApi, keys, 'Object'
-
-
-  _lintOverrideKeys: (node, astApi, keys) ->
-    {overrides} = astApi.config[@rule.name]
-    keys = keys.map @_stripQuotes
-    for key, index in keys
-      if index isnt 0 and overrides.indexOf(keys[index - 1]) > overrides.indexOf(key)
-        @errors.push astApi.createError {
-          lineNumber: node.locationData.first_line + 1
-          message: """
-            Keys should respect overrides ordering: #{keys[index - 1]} appears before #{key}
-            """
-          rule: 'alphabetize_keys'
-        }
-
-  _stripQuotes: (key) ->
-    if singleQuoteMatch = key.match(/^'(.*)'$/)
-      singleQuoteMatch[1]
-    else if doubleQuoteMatch = key.match(/^"(.*)"$/)
-      doubleQuoteMatch[1]
+    if astApi.getNodeName(node) is 'Class'
+      @_lintClass node, astApi
     else
-      key
+      node.eachChild (child) => @_lintNode child, astApi
 
+  _nodeSection: (property, astApi) ->
+    foundSection = null
+    @_classSectionTests.forEach ([sectionName, predicateName]) =>
+        foundSection ?= (sectionName if property[predicateName]())
+    foundSection or throw("Couldn't determine proper section for " + property)
 
 module.exports = AlphabetizeKeys
